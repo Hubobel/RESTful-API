@@ -290,7 +290,8 @@ def checkMittwoch():
     else:
         Superzahl=False
 
-    return jsonify({'Treffer':Treffer,'Superzahl':Superzahl,'richtige Ziffern':Ziffern,'aktuelle Ziehung':Lottofee[:6],'aktuelle Superzahl':Lottofee[-1:]})
+    return jsonify({'Treffer':Treffer,'Superzahl':Superzahl,'richtige Ziffern':Ziffern,
+                    'aktuelle Ziehung':Lottofee[:6],'aktuelle Superzahl':Lottofee[-1:],'Ziehung vom':Lottozahlen_aktuell['Datum']})
 
 @app.route('/lotto/Euro/check', methods=['POST'])
 def checkEuro():
