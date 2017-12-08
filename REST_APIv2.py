@@ -272,10 +272,14 @@ def checkMittwoch():
     Lottozahlen_aktuell,ZahlenEuro_aktuell=Lottoaktuell()
 
     Lottozahlen=[]
+    Lottofee=[]
     a=1
     while a!=7:
         Lottozahlen.append(Lottozahlen_aktuell['Z'+str(a)])
+        Lottofee.append(Lottozahlen_aktuell['Z' + str(a)])
         a+=1
+
+
     for i in eingabe[:6]:
         if i in Lottozahlen:
             Treffer+=1
@@ -286,7 +290,7 @@ def checkMittwoch():
     else:
         Superzahl=False
 
-    return jsonify({'Treffer':Treffer,'Superzahl':Superzahl,'richtige Ziffern':Ziffern})
+    return jsonify({'Treffer':Treffer,'Superzahl':Superzahl,'richtige Ziffern':Ziffern,'aktuelle Ziehung':Lottofee[:6],'aktuelle Superzahl':Lottofee[-1:]})
 
 @app.route('/lotto/Euro/check', methods=['POST'])
 def checkEuro():
