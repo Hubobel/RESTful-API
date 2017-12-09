@@ -328,6 +328,22 @@ def checkEuro():
                     'aktuelle Ziehung':Lottofee[:5],'aktuelle Eurozahl1':ZahlenEuro_aktuell['Eurozahl1'],
                     'aktuelle Eurozahl2':ZahlenEuro_aktuell['Eurozahl2'],'Ziehung vom':ZahlenEuro_aktuell['Datum']})
 
+@app.route('/kodi', methods=['GET'])
+def kodi():
+    connection = pymysql.connect(db="MyVideos107",
+                                 user="hubobel",
+                                 passwd="polier2003",
+                                 host='10.0.1.59', charset='utf8')
+    cursor = connection.cursor()
+    sql = "SELECT * FROM movie_view ORDER BY playCount DESC"
+    resp = cursor.execute(sql)
+    x = cursor.fetchall()
+    a = 1
+    antwort = {}
+    for i in x:
+        antwort[a] = i[2]
+        a = a + 1
+    return jsonify(antwort)
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
