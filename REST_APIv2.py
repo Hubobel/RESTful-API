@@ -94,6 +94,7 @@ def Lottoaktuell():
     ergebniss = []
     ZahlenEuro = {'Datum': '', 'Z1': '', 'Z2': '', 'Z3': '', 'Z4': '', 'Z5': '', 'Eurozahl1': '', 'Eurozahl2': ''}
     a = 1
+
     datum = soup.find_all('time')
     tag = []
     for i in datum:
@@ -303,9 +304,11 @@ def checkEuro():
     Lottozahlen_aktuell,ZahlenEuro_aktuell=Lottoaktuell()
 
     Lottozahlen=[]
+    Lottofee=[]
     a=1
     while a!=6:
         Lottozahlen.append(ZahlenEuro_aktuell['Z'+str(a)])
+        Lottofee.append(ZahlenEuro_aktuell['Z' + str(a)])
         a+=1
     for i in eingabe[:6]:
         if i in Lottozahlen:
@@ -321,7 +324,9 @@ def checkEuro():
     else:
         Eurozahl2=False
 
-    return jsonify({'Treffer':Treffer,'Eurozahl1':Eurozahl1,'Eurozahl2':Eurozahl2,'richtige Ziffern':Ziffern})
+    return jsonify({'Treffer':Treffer,'Eurozahl1':Eurozahl1,'Eurozahl2':Eurozahl2,'richtige Ziffern':Ziffern,
+                    'aktuelle Ziehung':Lottofee[:5],'aktuelle Eurozahl1':ZahlenEuro_aktuell['Eurozahl1'],
+                    'aktuelle Eurozahl2':ZahlenEuro_aktuell['Eurozahl2'],'Ziehung vom':ZahlenEuro_aktuell['Datum']})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
