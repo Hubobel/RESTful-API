@@ -212,6 +212,7 @@ def index():
     <p>GET: api.hubobel.de/lotto/Samstag.....: Liefert die letzten Samstagszahlen (aus der Datenbank)</p>
     <p>GET: api.hubobel.de/lotto/aktuell.....: Liefert die letzten Lottozahlen des Euro- und Mittwoch 
     bzw.Samstagslotto (online jeweils neu ermittelt)</p>
+    <p>GET: api.hubobel.de/bitcoin.....: Liefert die aktuellen Bitcoinkurse in EURO</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -344,6 +345,13 @@ def kodi():
         antwort[a] = i[2]
         a = a + 1
     return jsonify(antwort)
+@app.route('/bitcoin',methods=['GET'])
+def bitcoin():
+    url_zitat = 'https://blockchain.info/de/ticker'
+    resp_zitat = req.get(url_zitat)
+    data_zitat = resp_zitat.json()
+    return jsonify(data_zitat['EUR'])
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
