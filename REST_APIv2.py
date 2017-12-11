@@ -214,6 +214,7 @@ def index():
     bzw.Samstagslotto (online jeweils neu ermittelt)</p>
     <p>GET: api.hubobel.de/bitcoin.....: Liefert die aktuellen Bitcoinkurse in EURO</p>
     <p>GET: api.hubobel.de/wetter.....: Liefert das aktuelle Wetter in Oggersheim</p>
+    <p>GET: api.hubobel.de/sprit/'km'.....: Liefert die aktuellen Kraftstoffpreise im Umreis von 'km' Radius um 67071</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -361,6 +362,23 @@ def wetter():
     wetter = (data_response['current_observation']['weather'])
     feuchte = (data_response['current_observation']['relative_humidity'])
     return jsonify({'Temperatur':temperatur,'Wetter':wetter,'Feuchte':feuchte})
+@app.route('/sprit/<int:task_id>',methods=['GET'])
+def sprit(task_id):
+    url = 'https://creativecommons.tankerkoenig.de/json/list.php?lat=49.492995&lng=8.358411&' \
+          'rad='+str(task_id)+'&sort=dist&type=all&apikey=e5574b6b-9470-b1dd-7745-187750cf439a'
+    resp = req.get(url)
+    data = resp.json()
+    station = {}
+    daten = {}
+    for i in data['stations']:
+        daten['Adresse'] = i['street']
+        daten['preis_diesel'] = i['diesel']
+        daten['preis_e5'] = i['e5']
+        daten['preis_e10'] = i['e10']
+        station[i['name']] = {}
+        station[i['name']].update(daten)
+    return jsonify(station)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
