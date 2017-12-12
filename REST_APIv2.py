@@ -215,6 +215,8 @@ def index():
     <p>GET: api.hubobel.de/bitcoin.....: Liefert die aktuellen Bitcoinkurse in EURO</p>
     <p>GET: api.hubobel.de/wetter.....: Liefert das aktuelle Wetter in Oggersheim</p>
     <p>GET: api.hubobel.de/sprit/'km'.....: Liefert die aktuellen Kraftstoffpreise im Umreis von 'km' Radius um 67071</p>
+    <p>GET: api.hubobel.de/sprit/'Ort'.....: Liefert die aktuellen Kraftstoffpreise im 10km Radius 
+    um den übergebenen Ort</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -371,6 +373,32 @@ def sprit(task_id):
     station = {}
     daten = {}
     for i in data['stations']:
+        daten['Ort']=i['place']
+        daten['Adresse'] = i['street']
+        daten['preis_diesel'] = i['diesel']
+        daten['preis_e5'] = i['e5']
+        daten['preis_e10'] = i['e10']
+        station[i['name']] = {}
+        station[i['name']].update(daten)
+    return jsonify(station)
+@app.route('/sprit/<string:task_id>',methods=['GET'])
+def test(task_id):
+    url = 'https://maps.googleapis.com/maps/api/geocode/json'
+    params = {'sensor': 'false', 'address': task_id,'key':'AIzaSyDdT2hs83_FklFfJDulHf62V7HKWDu0VtU'}
+    r = req.get(url, params=params)
+    results = r.json()['results']
+    location = results[0]['geometry']['location']
+    lat=location['lat']
+    lng=location['lng']
+    url = 'https://creativecommons.tankerkoenig.de/json/list.php?lat='+str(lat)+'&lng='+str(lng)+ \
+          '&rad=10&sort=dist&type=all&apikey=e5574b6b-9470-b1dd-7745-187750cf439a'
+    print(url)
+    resp = req.get(url)
+    data = resp.json()
+    station = {}
+    daten = {}
+    for i in data['stations']:
+        daten['Ort'] = i['place']
         daten['Adresse'] = i['street']
         daten['preis_diesel'] = i['diesel']
         daten['preis_e5'] = i['e5']
