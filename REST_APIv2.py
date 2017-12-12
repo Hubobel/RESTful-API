@@ -159,6 +159,33 @@ def Lottoaktuell():
     Lottozahlen['Datum'] = date[start:ende]
 
     return Lottozahlen,ZahlenEuro
+def TV():
+    sauce = req.get('http://www.tvspielfilm.de/tv-programm/sendungen/jetzt.html', verify=False)
+    soup = bs.BeautifulSoup(sauce.text, 'lxml')
+
+    sender_source = soup.find_all('h3')
+    sendungen_source = soup.find_all('strong')
+
+    Sender = []
+    Sendung = []
+    Sendungen = {}
+    for i in sendungen_source:
+        Sendung.append(i.text)
+    for i in sender_source:
+        Sender.append(i.text)
+    Sendung.pop(0)  # erstes Element des Listenelements 'Sendung' wird entfernt
+    programm = {}
+    a = 0
+    b = 0
+
+    while a < len(Sender):
+        programm['Uhrzeit'] = Sendung[b]
+        programm['Titel'] = Sendung[b + 1]
+        Sendungen[Sender[a]] = {}
+        Sendungen[Sender[a]].update(programm)
+        a += 1
+        b += 2
+    return Sendungen
 
 @app.route('/lotto', methods=['GET'])
 def get_lotto():
@@ -217,6 +244,7 @@ def index():
     <p>GET: api.hubobel.de/sprit/'km'.....: Liefert die aktuellen Kraftstoffpreise im Umreis von 'km' Radius um 67071</p>
     <p>GET: api.hubobel.de/sprit/'Ort'.....: Liefert die aktuellen Kraftstoffpreise im 10km Radius 
     um den übergebenen Ort</p>
+    <p>GET: api.hubobel.de/tv.....: Liefert das aktuelle TV Programm</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -406,7 +434,10 @@ def test(task_id):
         station[i['name']] = {}
         station[i['name']].update(daten)
     return jsonify(station)
-
+@app.route('/tv',methods=['GET'])
+def tv():
+    Sendungen=TV()
+    return jsonify(Sendungen)
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
