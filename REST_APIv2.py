@@ -160,31 +160,37 @@ def Lottoaktuell():
 
     return Lottozahlen,ZahlenEuro
 def TV():
-    sauce = req.get('http://www.tvspielfilm.de/tv-programm/sendungen/jetzt.html', verify=False)
-    soup = bs.BeautifulSoup(sauce.text, 'lxml')
-
-    sender_source = soup.find_all('h3')
-    sendungen_source = soup.find_all('strong')
-
-    Sender = []
-    Sendung = []
     Sendungen = {}
-    for i in sendungen_source:
-        Sendung.append(i.text)
-    for i in sender_source:
-        Sender.append(i.text)
-    Sendung.pop(0)  # erstes Element des Listenelements 'Sendung' wird entfernt
-    programm = {}
-    a = 0
-    b = 0
+    x = 1
+    while x <= 7:
+        sauce = req.get('http://www.tvspielfilm.de/tv-programm/sendungen/jetzt.html?page=' + str(x), verify=False)
+        soup = bs.BeautifulSoup(sauce.text, 'lxml')
 
-    while a < len(Sender):
-        programm['Uhrzeit'] = Sendung[b]
-        programm['Titel'] = Sendung[b + 1]
-        Sendungen[Sender[a]] = {}
-        Sendungen[Sender[a]].update(programm)
-        a += 1
-        b += 2
+        sender_source = soup.find_all('td', class_='programm-col1')
+        sendungen_source = soup.find_all('strong')
+
+        Sender = []
+        Sendung = []
+
+        for i in sendungen_source:
+            Sendung.append(i.text)
+        for i in sender_source:
+            text = i.text
+            text = text.replace('\n', '')
+            Sender.append(text)
+        Sendung.pop(0)  # erstes Element des Listenelements 'Sendung' wird entfernt
+        programm = {}
+        a = 0
+        b = 0
+
+        while a < len(Sender):
+            programm['Uhrzeit'] = Sendung[b]
+            programm['Titel'] = Sendung[b + 1]
+            Sendungen[Sender[a]] = {}
+            Sendungen[Sender[a]].update(programm)
+            a += 1
+            b += 2
+        x += 1
     return Sendungen
 
 @app.route('/lotto', methods=['GET'])
