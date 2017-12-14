@@ -159,11 +159,24 @@ def Lottoaktuell():
     Lottozahlen['Datum'] = date[start:ende]
 
     return Lottozahlen,ZahlenEuro
-def TV():
+def TV(mode):
+    if mode==0:
+        mode='jetzt'
+        range=7
+    if mode==1:
+        mode='abends'
+        range=7
+    if mode==2:
+        mode='fernsehprogramm-nachts'
+        range=7
+    if mode==3:
+        mode='jetzt'
+        range=1
+
     Sendungen = {}
     x = 1
-    while x <= 7:
-        sauce = req.get('http://www.tvspielfilm.de/tv-programm/sendungen/jetzt.html?page=' + str(x), verify=False)
+    while x <= range:
+        sauce = req.get('http://www.tvspielfilm.de/tv-programm/sendungen/'+mode+'.html?page=' + str(x), verify=False)
         soup = bs.BeautifulSoup(sauce.text, 'lxml')
 
         sender_source = soup.find_all('td', class_='programm-col1')
@@ -191,6 +204,10 @@ def TV():
             a += 1
             b += 2
         x += 1
+        liste = []
+        for i in Sendungen:
+            liste.append(i)
+        Sendungen['Senderliste'] = liste
     return Sendungen
 
 @app.route('/lotto', methods=['GET'])
@@ -250,7 +267,10 @@ def index():
     <p>GET: api.hubobel.de/sprit/'km'.....: Liefert die aktuellen Kraftstoffpreise im Umreis von 'km' Radius um 67071</p>
     <p>GET: api.hubobel.de/sprit/'Ort'.....: Liefert die aktuellen Kraftstoffpreise im 10km Radius 
     um den übergebenen Ort</p>
-    <p>GET: api.hubobel.de/tv.....: Liefert das aktuelle TV Programm</p>
+    <p>GET: api.hubobel.de/tv.....: Liefert das aktuelle TV Programm der Hauptsender</p>
+    <p>GET: api.hubobel.de/tv/jetzt.....: Liefert das aktuelle TV Programm aller Sender</p>
+    <p>GET: api.hubobel.de/tv/2015.....: Liefert das aktuelle TV Programm aller Sender um 20.15Uhr</p>
+    <p>GET: api.hubobel.de/tv/2200.....: Liefert das aktuelle TV Programm aller Sender um 22.00Uhr</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -331,7 +351,7 @@ def checkMittwoch():
         Superzahl=False
 
     return jsonify({'Treffer':Treffer,'Superzahl':Superzahl,'richtige Ziffern':Ziffern,
-                    'aktuelle Ziehung':Lottofee[:6],'aktuelle Superzahl':Lottofee[-1:],'Ziehung vom':Lottozahlen_aktuell['Datum']})
+                    'aktuelle Ziehung':Lottofee[:6],'aktuelle Superzahl':Lottozahlen_aktuell['Superzahl'],'Ziehung vom':Lottozahlen_aktuell['Datum']})
 
 @app.route('/lotto/Euro/check', methods=['POST'])
 def checkEuro():
@@ -440,10 +460,23 @@ def test(task_id):
         station[i['name']] = {}
         station[i['name']].update(daten)
     return jsonify(station)
+@app.route('/tv/jetzt',methods=['GET'])
+def tv_now():
+    Sendungen=TV(0)
+    return jsonify(Sendungen)
+@app.route('/tv/2015',methods=['GET'])
+def tv_abends():
+    Sendungen=TV(1)
+    return jsonify(Sendungen)
+@app.route('/tv/2200',methods=['GET'])
+def tv_nachts():
+    Sendungen=TV(2)
+    return jsonify(Sendungen)
 @app.route('/tv',methods=['GET'])
 def tv():
-    Sendungen=TV()
+    Sendungen=TV(3)
     return jsonify(Sendungen)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
 
