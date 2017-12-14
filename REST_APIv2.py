@@ -190,6 +190,7 @@ def TV(mode):
         for i in sender_source:
             text = i.text
             text = text.replace('\n', '')
+            text = text.replace(' ', '')
             Sender.append(text)
         Sendung.pop(0)  # erstes Element des Listenelements 'Sendung' wird entfernt
         programm = {}
@@ -271,6 +272,7 @@ def index():
     <p>GET: api.hubobel.de/tv/jetzt.....: Liefert das aktuelle TV Programm aller Sender</p>
     <p>GET: api.hubobel.de/tv/2015.....: Liefert das aktuelle TV Programm aller Sender um 20.15Uhr</p>
     <p>GET: api.hubobel.de/tv/2200.....: Liefert das aktuelle TV Programm aller Sender um 22.00Uhr</p>
+    <p>POST: api.hubobel.de/tv/check.....: Uebergabe von beliebigen Sendern als Liste - liefert Programm zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 5+2 Zahlen als Liste - liefert Anzahl 
@@ -476,6 +478,20 @@ def tv_nachts():
 def tv():
     Sendungen=TV(3)
     return jsonify(Sendungen)
+@app.route('/tv/check', methods=['POST'])
+def tv_check():
+    auswahl=request.json
+    Sendungen=TV(0)
+    x = len(auswahl)
+    rück = {}
+    a = 0
+    while a <= x:
+        for i in auswahl:
+            if i in Sendungen.keys():
+                rück[i] = {}
+                rück[i].update(Sendungen[i])
+        a += 1
+    return jsonify(rück)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
