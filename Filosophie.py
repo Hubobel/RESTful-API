@@ -11,12 +11,9 @@ cursor = connection.cursor()
 
 
 requests.packages.urllib3.disable_warnings()
-sauce = requests.get('https://www.swr3.de/wraps/fun/filosofie/neu.php?id=1117', verify=False)
+sauce = requests.get('https://www.swr3.de/wraps/fun/filosofie/neu.php?id=11', verify=False)
 soup = bs.BeautifulSoup(sauce.text, 'lxml')
 
 
-for i in soup.find_all('meta'):
-    #print(i)
-    if (i.get('content'))is not None:
-        if(i.get('content')[:10])=='SWR3.de - ':
-            print(i.get('content')[10:])
+for i in soup.find_all('strong'):
+    print(i.text)
