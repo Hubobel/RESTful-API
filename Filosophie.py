@@ -16,5 +16,7 @@ soup = bs.BeautifulSoup(sauce.text, 'lxml')
 
 
 for i in soup.find_all('meta'):
-    print(i)
-    print(i.get('content'))
+    #print(i)
+    if (i.get('content'))is not None:
+        if(i.get('content')[:10])=='SWR3.de - ':
+            print(i.get('content')[10:])

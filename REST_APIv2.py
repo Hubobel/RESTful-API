@@ -4,6 +4,7 @@ from flask import request
 import pymysql
 import bs4 as bs
 import requests as req
+import datetime
 
 app = Flask(__name__)
 
@@ -86,35 +87,61 @@ def Lotto():
     connection.close()
     return ZahlenMittwoch,ZahlenEuro,ZahlenSamstag
 def Lottoaktuell():
+    # req.packages.urllib3.disable_warnings()
+    # sauce = req.get('https://www.eurojackpot.org/gewinnzahlen/', verify=False)
+    # soup = bs.BeautifulSoup(sauce.text, 'lxml')
+    #
+    # zahlen = []
+    # ergebniss = []
+    # ZahlenEuro = {'Datum': '', 'Z1': '', 'Z2': '', 'Z3': '', 'Z4': '', 'Z5': '', 'Eurozahl1': '', 'Eurozahl2': ''}
+    # a = 1
+    #
+    # datum = soup.find_all('time')
+    # tag = []
+    # for i in datum:
+    #     tag.append(i.text)
+    # for li in soup.find_all('li'):
+    #     zahlen.append(li.text)
+    # for i in zahlen[0:7]:
+    #     ergebniss.append(int(i))
+    # ergebniss.append(tag[1])
+    # while a != 6:
+    #     ZahlenEuro['Z' + str(a)] = ergebniss[a - 1]
+    #     a = a + 1
+    #
+    #
+    #
+    # ende = (ergebniss[7].find('- Freitag'))
+    # Datum=ergebniss[7]
+    # ZahlenEuro['Datum'] = Datum[:ende-1]
+    # ZahlenEuro['Eurozahl1'] = ergebniss[5]
+    # ZahlenEuro['Eurozahl2'] = ergebniss[6]
     req.packages.urllib3.disable_warnings()
-    sauce = req.get('https://www.eurojackpot.org/gewinnzahlen/', verify=False)
+    sauce = req.get(
+        'https://www.sachsenlotto.de/portal/zahlen-quoten/gewinnzahlen/eurojackpot-gewinnzahlen/eurojackpot-gewinnzahlen.jsp',
+        verify=False)
     soup = bs.BeautifulSoup(sauce.text, 'lxml')
 
     zahlen = []
     ergebniss = []
     ZahlenEuro = {'Datum': '', 'Z1': '', 'Z2': '', 'Z3': '', 'Z4': '', 'Z5': '', 'Eurozahl1': '', 'Eurozahl2': ''}
     a = 1
+    source = soup.find_all('span',
+                           class_='sl-statistic-number-circle-container-filled col-lg-1 col-md-1 col-sm-1 col-xs-1')
+    for i in source:
+        zahlen.append(i.text)
+    while a <= 5:
+        ZahlenEuro['Z' + str(a)] = int(zahlen[a - 1])
+        a += 1
+    ZahlenEuro['Eurozahl1'] = zahlen[5]
+    ZahlenEuro['Eurozahl2'] = zahlen[6]
+    print(ZahlenEuro)
 
-    datum = soup.find_all('time')
-    tag = []
-    for i in datum:
-        tag.append(i.text)
-    for li in soup.find_all('li'):
-        zahlen.append(li.text)
-    for i in zahlen[0:7]:
-        ergebniss.append(int(i))
-    ergebniss.append(tag[1])
-    while a != 6:
-        ZahlenEuro['Z' + str(a)] = ergebniss[a - 1]
-        a = a + 1
-
-
-
-    ende = (ergebniss[7].find('- Freitag'))
-    Datum=ergebniss[7]
-    ZahlenEuro['Datum'] = Datum[:ende-1]
-    ZahlenEuro['Eurozahl1'] = ergebniss[5]
-    ZahlenEuro['Eurozahl2'] = ergebniss[6]
+    source = soup.find_all('h3', style='color: white')
+    for i in source:
+        datum = i.text
+    start = (datum.find('Freitag,')) + 9
+    ZahlenEuro['Datum'] = datum[start:]
 
     req.packages.urllib3.disable_warnings()
     sauce = req.get('https://www.lotto24.de/webshop/product/lottonormal/result', verify=False)
@@ -304,7 +331,7 @@ def get_task(task_id):
     cursor.close()
     connection.close()
     return jsonify({'fact': resp})
-@app.route('/zufall', methods=['GET'])
+@app.route('/facts/zufall', methods=['GET'])
 def zufall():
     connection = pymysql.connect(db="hubobel",
                                  user="hubobel",
@@ -482,16 +509,62 @@ def tv():
 def tv_check():
     auswahl=request.json
     Sendungen=TV(0)
-    x = len(auswahl)
     rück = {}
-    a = 0
-    while a <= x:
-        for i in auswahl:
-            if i in Sendungen.keys():
-                rück[i] = {}
-                rück[i].update(Sendungen[i])
-        a += 1
+    for i in auswahl:
+        if i in Sendungen.keys():
+            rück[i] = {}
+            rück[i].update(Sendungen[i])
     return jsonify(rück)
+
+@app.route('/beta',methods=['GET'])
+def beta():
+    req.packages.urllib3.disable_warnings()
+    sauce = req.get(
+        'https://www.sachsenlotto.de/portal/zahlen-quoten/gewinnzahlen/eurojackpot-gewinnzahlen/eurojackpot-gewinnzahlen.jsp',
+        verify=False)
+    soup = bs.BeautifulSoup(sauce.text, 'lxml')
+
+    zahlen = []
+    ergebniss = []
+    ZahlenEuro = {'Datum': '', 'Z1': '', 'Z2': '', 'Z3': '', 'Z4': '', 'Z5': '', 'Eurozahl1': '', 'Eurozahl2': ''}
+    a = 1
+    source = soup.find_all('span',
+                           class_='sl-statistic-number-circle-container-filled col-lg-1 col-md-1 col-sm-1 col-xs-1')
+    for i in source:
+        zahlen.append(i.text)
+    while a <= 5:
+        ZahlenEuro['Z' + str(a)] = int(zahlen[a - 1])
+        a += 1
+    ZahlenEuro['Eurozahl1'] = zahlen[5]
+    ZahlenEuro['Eurozahl2'] = zahlen[6]
+    print(ZahlenEuro)
+
+    source = soup.find_all('h3', style='color: white')
+    for i in source:
+        datum = i.text
+    return jsonify(ZahlenEuro,datum)
+@app.route('/ferien/<string:task_id>',methods=['GET'])
+def ferien(task_id):
+    url = 'http://api.smartnoob.de/ferien/v1/ferien/?bundesland='+task_id
+    resp = req.get(url)
+    data = resp.json()
+
+    ferien = False
+
+    jetzt = 356
+
+    for i in data['daten']:
+        beginn = int(datetime.datetime.fromtimestamp(i['beginn']).strftime('%j'))
+        ende = int(datetime.datetime.fromtimestamp(i['ende']).strftime('%j')) - 1
+        if jetzt <= ende and jetzt >= beginn:
+            ferien = True
+        if jetzt >= beginn and ende > beginn:
+            ferien = True
+        if jetzt <= ende:
+            ferien = True
+        if jetzt > ende and jetzt < beginn:
+            ferien = False
+    return jsonify(ferien)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
