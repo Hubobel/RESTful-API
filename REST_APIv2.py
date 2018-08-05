@@ -583,7 +583,7 @@ def filosophie():
     url = 'https://www.swr3.de/wraps/fun/filosofie/neu.php?id=' + str(ran)
 
     sauce = req.get(url, verify=False)
-    soup = bs.BeautifulSoup(sauce.text, 'lxml')
+    soup = bs.BeautifulSoup(sauce.content, 'lxml')
     for i in soup.find_all('strong'):
         filosophie = (i.text)
     return jsonify(filosophie)
