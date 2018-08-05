@@ -299,6 +299,7 @@ def index():
     <p>GET: api.hubobel.de/tv/jetzt.....: Liefert das aktuelle TV Programm aller Sender</p>
     <p>GET: api.hubobel.de/tv/2015.....: Liefert das aktuelle TV Programm aller Sender um 20.15Uhr</p>
     <p>GET: api.hubobel.de/tv/2200.....: Liefert das aktuelle TV Programm aller Sender um 22.00Uhr</p>
+    <p>GET: api.hubobel.de/filosophie.....: Liefert Filosophie des SWR3 zurück</p>
     <p>POST: api.hubobel.de/tv/check.....: Uebergabe von beliebigen Sendern als Liste - liefert Programm zurueck</p>
     <p>POST: api.hubobel.de/lotto/6aus49/check.....: Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl
      der Treffer zurueck</p>
@@ -565,6 +566,27 @@ def ferien(task_id):
         if jetzt > ende and jetzt < beginn:
             ferien = False
     return jsonify(ferien)
+
+@app.route('/filosophie',methods=['GET'])
+def filosophie():
+    ergebniss = ''
+    req.packages.urllib3.disable_warnings()
+    sauce = req.get('https://www.swr3.de/wraps/fun/filosofie/neu.php?id=11', verify=False)
+    soup = bs.BeautifulSoup(sauce.text, 'lxml')
+
+    for i in soup.find_all('div'):
+        ergebniss = ergebniss + str(i)
+
+    start = (ergebniss.find('href="/wraps/fun/filosofie/neu.php?id=12"> weiter &gt; </a>   <a class="linkred" href='))
+    anzahl = int(ergebniss[start + 119:start + 123])
+    ran = random.randint(1, anzahl)
+    url = 'https://www.swr3.de/wraps/fun/filosofie/neu.php?id=' + str(ran)
+
+    sauce = req.get(url, verify=False)
+    soup = bs.BeautifulSoup(sauce.text, 'lxml')
+    for i in soup.find_all('strong'):
+        filosophie = (i.text)
+    return jsonify(filosophie)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

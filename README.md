@@ -16,6 +16,8 @@ folgende Aufrufe sind derzeit realisisert:
 
 **GET: api.hubobel.de/lotto/Samstag.....:** Liefert die letzten Samstagszahlen (aus der Datenbank)
 
+**GET: api.hubobel.de/filosophie.....:** Liefert Filosophie des SWR3 zurück
+
 **GET: api.hubobel.de/lotto/aktuell.....:** Liefert die letzten Lottozahlen des Euro- und Mittwoch     bzw.Samstagslotto (online jeweils neu ermittelt)
 
 **POST: api.hubobel.de/lotto/6aus49/check.....:** Uebergabe der 6+1 Zahlen als Liste - liefert Anzahl     der Treffer zurueck (Daten werden immer neu ermittelt)
