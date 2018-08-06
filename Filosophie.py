@@ -3,17 +3,33 @@ import bs4 as bs
 import requests
 import random
 import smtplib
+import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
 ergebniss=''
+mail=False
+toadress=[]
 
-def Nachricht(sub='I am ROOT',body='this comes from Hubobel'):
+for arg in sys.argv:
+    toadress.append(arg)
+
+toadress=toadress[1:]
+
+if len(toadress)>0:
+    mail=True
+
+
+
+def Nachricht(toadress,sub='I am ROOT',body='this comes from Hubobel'):
     fromaddr = 'schneeschieben@web.de'
-    toaddr = 'carsten.richter@soka-bau.de'
-    bccs = toaddr
+    toaddr = toadress[0]
+    if len(toadress)==1:
+        bccs=toadress[0]
+    else:
+        bccs = toadress[1:]
 
     pwd = 'PL19zPL19z'
     acc = 'carsten.richter77@gmail.com'
@@ -54,4 +70,5 @@ for i in soup.find_all('strong'):
     filosophie=(i.text)
 print(filosophie)
 
-Nachricht(filosophie,filosophie)
+if mail:
+    Nachricht(toadress,filosophie,filosophie)
