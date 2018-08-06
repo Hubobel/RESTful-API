@@ -1,7 +1,9 @@
 import os
 
-user=os.environ.get('user')
-passw=os.environ.get('passw')
+user=os.environ.get('USER')
+passw=os.environ.get('PASSW')
+fromaddr = os.environ.get('FROMADD')
 
 print(user)
 print(passw)
+print(fromaddr)

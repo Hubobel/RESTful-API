@@ -25,10 +25,11 @@ if len(toadress)>0:
 
 
 def Nachricht(toadress,sub='I am ROOT',body='this comes from Hubobel'):
-    acc = os.environ.get('user')
-    pwd = os.environ.get('passw')
 
-    fromaddr = 'schneeschieben@web.de'
+    acc = os.environ.get('USER')
+    pwd = os.environ.get('PASSW')
+    fromaddr = os.environ.get('FROMADD')
+
     toaddr = toadress[0]
     if len(toadress)==1:
         bccs=toadress[0]
