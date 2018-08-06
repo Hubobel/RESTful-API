@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import os
 
 ergebniss=''
 mail=False
@@ -24,15 +25,15 @@ if len(toadress)>0:
 
 
 def Nachricht(toadress,sub='I am ROOT',body='this comes from Hubobel'):
+    acc = os.environ.get('user')
+    pwd = os.environ.get('passw')
+
     fromaddr = 'schneeschieben@web.de'
     toaddr = toadress[0]
     if len(toadress)==1:
         bccs=toadress[0]
     else:
         bccs = toadress[1:]
-
-    pwd = 'PL19zPL19z'
-    acc = 'carsten.richter77@gmail.com'
 
     msg = MIMEMultipart()
 
