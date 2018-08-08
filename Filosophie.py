@@ -6,8 +6,6 @@ import smtplib
 import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 import os
 
 ergebniss=''
@@ -22,30 +20,20 @@ toadress=toadress[1:]
 if len(toadress)>0:
     mail=True
 
-
-
 def Nachricht(toadress,sub='I am ROOT',body='this comes from Hubobel'):
-
     acc = os.environ.get('USER')
     pwd = os.environ.get('PASSW')
     fromaddr = os.environ.get('FROMADD')
-
     toaddr = toadress[0]
     if len(toadress)==1:
         bccs=toadress[0]
     else:
         bccs = toadress[1:]
-
     msg = MIMEMultipart()
-
     msg['From'] = fromaddr
     msg['To'] = toaddr
     msg['Subject'] = sub
-
     msg.attach(MIMEText(body, 'plain'))
-
-
-
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(acc, pwd)
