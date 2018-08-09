@@ -11,6 +11,7 @@ import os
 ergebniss=''
 mail=False
 toadress=[]
+#todo testing
 
 for arg in sys.argv:
     toadress.append(arg)
